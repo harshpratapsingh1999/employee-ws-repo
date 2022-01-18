@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b915b62b-01c3-42f8-8511-c15abac4349a" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="a7a8a6a8-45ee-4207-9db5-020e5723c670" file="config.yaml" />
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="4c5abe4c-83fc-47e0-a0bc-1c89e8376d8a" >
+		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.user}" password="${database.password}" database="${database.database}" />
+	</db:config>
+	<configuration doc:name="Configuration" doc:id="fa4004dc-5867-49be-b85a-f78d436deb8a" defaultErrorHandler-ref="globalError_Handler" />
+	<error-handler name="globalError_Handler" doc:id="32b3d3f3-8d9c-4634-9be7-b01a91622c77" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="df61b6fe-da02-4ab3-8152-30862df9f6f2" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="e3ff2e38-7f09-4f93-800f-4833f66e5b8d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Global error"
+}
+
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-continue>
+	</error-handler>
+</mule>
